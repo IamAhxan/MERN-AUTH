@@ -17,12 +17,10 @@ const allowedOrigins = [
 ];
 
 // ✅ Put cors() BEFORE other middlewares & routes
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true, // allow cookies
-  })
-);
+app.use(cors({
+  origin: "https://mern-auth-client-tau.vercel.app",
+  credentials: true
+}));
 
 // ✅ Handle preflight requests globally
 app.options("*", cors());

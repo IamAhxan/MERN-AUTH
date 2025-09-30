@@ -23,12 +23,11 @@ export const register = async (req, res) => {
         await user.save();
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        })
+        res.cookie("token", jwtToken, {
+  httpOnly: true,
+  secure: true,        // true if using https
+  sameSite: "None"     // important for cross-site cookies
+});
 
         const mailOptions = {
             to: email,
@@ -63,12 +62,11 @@ export const login = async (req, res) => {
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    })
+res.cookie("token", jwtToken, {
+  httpOnly: true,
+  secure: true,        // true if using https
+  sameSite: "None"     // important for cross-site cookies
+});
     res.json({ success: true })
     try {
         const user = await userModel.findOne({ email })
@@ -81,12 +79,11 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-        res.clearCookie('token', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
-
-        })
+res.cookie("token", jwtToken, {
+  httpOnly: true,
+  secure: true,        // true if using https
+  sameSite: "None"     // important for cross-site cookies
+});
         return res.json({ success: true, message: "logged Out" })
     } catch (error) {
         return res.json({ success: false, message: error.message })
