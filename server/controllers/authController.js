@@ -23,7 +23,7 @@ export const register = async (req, res) => {
         await user.save();
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
-        res.cookie("token", jwtToken, {
+        res.cookie("token", token, {
   httpOnly: true,
   secure: true,        // true if using https
   sameSite: "None"     // important for cross-site cookies
@@ -62,7 +62,7 @@ export const login = async (req, res) => {
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
-res.cookie("token", jwtToken, {
+res.cookie("token", token, {
   httpOnly: true,
   secure: true,        // true if using https
   sameSite: "None"     // important for cross-site cookies
@@ -79,7 +79,7 @@ res.cookie("token", jwtToken, {
 
 export const logout = async (req, res) => {
     try {
-res.cookie("token", jwtToken, {
+res.cookie("token", token, {
   httpOnly: true,
   secure: true,        // true if using https
   sameSite: "None"     // important for cross-site cookies
