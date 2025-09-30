@@ -1,43 +1,43 @@
-import express from "express"
-import cors from "cors"
-import cookieParser from "cookie-parser"
-import 'dotenv/config'
-import connectDB from "./config/mongodb.js"
-import authRouter from './routes/authRoutes.js'
-import userRouter from "./routes/userRoutes.js"
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import "dotenv/config";
+import connectDB from "./config/mongodb.js";
+import authRouter from "./routes/authRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
-const app = express()
+const app = express();
 const serverPort = process.env.PORT || 4000;
-connectDB()
+
+connectDB();
 
 const allowedOrigins = [
   "http://localhost:5173", // dev
-  "https://mern-auth-client-tau.vercel.app" // your frontend on vercel
+  "https://mern-auth-client-tau.vercel.app" // deployed frontend
 ];
-app.use(express.json())
-app.use(cookieParser())
+
+// ✅ Put cors() BEFORE other middlewares & routes
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true, // if you use cookies or auth headers
+    origin: allowedOrigins,
+    credentials: true, // allow cookies
   })
 );
 
-//API Endpoints
+// ✅ Handle preflight requests globally
+app.options("*", cors());
+
+app.use(express.json());
+app.use(cookieParser());
+
+// API Endpoints
 app.get("/", (req, res) => {
-    res.send("API is working")
-})
+  res.send("API is working");
+});
 
-app.use('/api/auth', authRouter)
-app.use('/api/user', userRouter)
-
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 app.listen(serverPort, () => {
-    console.log(`server is running on port ${serverPort}`)
-})
+  console.log(`server is running on port ${serverPort}`);
+});
