@@ -78,17 +78,17 @@ res.cookie("token", token, {
 
 
 export const logout = async (req, res) => {
-    try {
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // true if using https
-  sameSite: "None"     // important for cross-site cookies
-});
-        return res.json({ success: true, message: "logged Out" })
-    } catch (error) {
-        return res.json({ success: false, message: error.message })
-    }
-}
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,   // true if you're using https
+      sameSite: "None"
+    });
+    return res.json({ success: true, message: "Logged out" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
 
 export const sendVerifyOtp = async (req, res) => {
     try {
