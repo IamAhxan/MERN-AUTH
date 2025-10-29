@@ -19,15 +19,15 @@ export const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const user = new userModel({ name, email, password: hashedPassword })
-
+        s
         await user.save();
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
         res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // true if using https
-  sameSite: "None"     // important for cross-site cookies
-});
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // true in production
+            sameSite: "None",     // important for cross-site cookies
+        });
 
         const mailOptions = {
             to: email,
@@ -62,11 +62,11 @@ export const login = async (req, res) => {
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // true if using https
-  sameSite: "None"     // important for cross-site cookies
-});
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // true in production
+        sameSite: "None",    // important for cross-site cookies
+    });
     res.json({ success: true })
     try {
         const user = await userModel.findOne({ email })
@@ -78,16 +78,16 @@ res.cookie("token", token, {
 
 
 export const logout = async (req, res) => {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: true,   // true if you're using https
-      sameSite: "None"
-    });
-    return res.json({ success: true, message: "Logged out" });
-  } catch (error) {
-    return res.json({ success: false, message: error.message });
-  }
+    try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // true in production
+            sameSite: "None",
+        });
+        return res.json({ success: true, message: "Logged out" });
+    } catch (error) {
+        return res.json({ success: false, message: error.message });
+    }
 };
 
 export const sendVerifyOtp = async (req, res) => {
@@ -125,7 +125,7 @@ export const sendVerifyOtp = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
     const { otp } = req.body;
-    const {userId} = req.userId
+    const { userId } = req.userId
 
     if (!userId || !otp) {
         return res.json({ success: false, message: 'missing Details' })
